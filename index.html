@@ -51,7 +51,10 @@
   .word.flip .word-inner{transform:rotateY(180deg);}
   .word-face{position:absolute;inset:0;backface-visibility:hidden;padding:12px 14px;display:flex;flex-direction:column;justify-content:center;}
   .word-front .w{font-size:19px;font-weight:600;}
+  .word-front .ipa{font-size:13px;color:var(--en);margin-top:1px;font-family:"Times New Roman",serif;}
   .word-front .pos{font-size:12px;color:var(--sub);margin-top:2px;}
+  .speak{display:inline-block;font-size:15px;cursor:pointer;padding:0 4px;filter:grayscale(.2);}
+  .speak:active{transform:scale(1.3);}
   .word-front .hint{font-size:11px;color:var(--sub);position:absolute;right:12px;bottom:8px;}
   .word-back{transform:rotateY(180deg);background:#1d2742;border-radius:12px;}
   .word-back .zh{font-size:15px;font-weight:600;color:var(--accent2);}
@@ -209,24 +212,39 @@ const DAYS = {
       task: "告诉 AI：① 不看文本你听懂了百分之几 ② 哪一句完全没听懂（贴出来）"
     },
     words: [
-      {w:"improve", pos:"v. 动词", zh:"改善，提高", def:"to make something better", eg:"I want to improve my English."},
-      {w:"environment", pos:"n. 名词", zh:"环境", def:"the natural world; the conditions around you", eg:"We must protect the environment."},
-      {w:"significant", pos:"adj. 形容词", zh:"重要的，显著的（不是\"有意义的\"）", def:"large or important enough to have an effect", eg:"There was a significant change in the data."},
-      {w:"sufficient", pos:"adj.", zh:"足够的，充足的", def:"as much as is needed", eg:"We have sufficient time to finish."},
-      {w:"deteriorate", pos:"v.", zh:"恶化，变坏（你没认出来的词）", def:"to become worse", eg:"His health began to deteriorate."},
-      {w:"comprehensive", pos:"adj.", zh:"全面的，综合的（不是\"理解的\"）", def:"including everything; complete", eg:"The report gives a comprehensive overview."},
-      {w:"inevitable", pos:"adj.", zh:"不可避免的", def:"certain to happen; unavoidable", eg:"Change is inevitable."},
-      {w:"ambiguous", pos:"adj.", zh:"模糊的，有歧义的（不是\"巨大的\"）", def:"having more than one possible meaning; unclear", eg:"His answer was ambiguous."},
-      {w:"commute", pos:"v./n.", zh:"通勤（上下班往返）", def:"to travel regularly between home and work", eg:"I commute to work by subway."},
-      {w:"postpone", pos:"v.", zh:"推迟，延期", def:"to delay an event to a later time", eg:"The meeting was postponed to Friday."},
-      {w:"although", pos:"conj. 连词", zh:"尽管，虽然", def:"in spite of the fact that", eg:"Although it was late, I cooked dinner."},
-      {w:"relieve", pos:"v.", zh:"缓解，减轻（你写成了 relived 重温，差很远）", def:"to reduce pain, worry or a problem", eg:"The food relieved my stress."},
-      {w:"stressful", pos:"adj.", zh:"有压力的，令人紧张的", def:"causing a lot of worry or pressure", eg:"My job is very stressful."},
-      {w:"exhausted", pos:"adj.", zh:"筋疲力尽的（比 tired 更强）", def:"extremely tired", eg:"After 11 hours of work, I was exhausted."},
-      {w:"delicious", pos:"adj.", zh:"美味的", def:"having a very pleasant taste", eg:"The beef steak was delicious."}
+      {w:"improve", ipa:"/ɪmˈpruːv/", pos:"v. 动词", zh:"改善，提高", def:"to make something better", eg:"I want to improve my English."},
+      {w:"environment", ipa:"/ɪnˈvaɪrənmənt/", pos:"n. 名词", zh:"环境", def:"the natural world; the conditions around you", eg:"We must protect the environment."},
+      {w:"significant", ipa:"/sɪɡˈnɪfɪkənt/", pos:"adj. 形容词", zh:"重要的，显著的（不是\"有意义的\"）", def:"large or important enough to have an effect", eg:"There was a significant change in the data."},
+      {w:"sufficient", ipa:"/səˈfɪʃnt/", pos:"adj.", zh:"足够的，充足的", def:"as much as is needed", eg:"We have sufficient time to finish."},
+      {w:"deteriorate", ipa:"/dɪˈtɪəriəreɪt/", pos:"v.", zh:"恶化，变坏（你没认出来的词）", def:"to become worse", eg:"His health began to deteriorate."},
+      {w:"comprehensive", ipa:"/ˌkɒmprɪˈhensɪv/", pos:"adj.", zh:"全面的，综合的（不是\"理解的\"）", def:"including everything; complete", eg:"The report gives a comprehensive overview."},
+      {w:"inevitable", ipa:"/ɪnˈevɪtəbl/", pos:"adj.", zh:"不可避免的", def:"certain to happen; unavoidable", eg:"Change is inevitable."},
+      {w:"ambiguous", ipa:"/æmˈbɪɡjuəs/", pos:"adj.", zh:"模糊的，有歧义的（不是\"巨大的\"）", def:"having more than one possible meaning; unclear", eg:"His answer was ambiguous."},
+      {w:"commute", ipa:"/kəˈmjuːt/", pos:"v./n.", zh:"通勤（上下班往返）", def:"to travel regularly between home and work", eg:"I commute to work by subway."},
+      {w:"postpone", ipa:"/pəˈspəʊn/", pos:"v.", zh:"推迟，延期", def:"to delay an event to a later time", eg:"The meeting was postponed to Friday."},
+      {w:"although", ipa:"/ɔːlˈðəʊ/", pos:"conj. 连词", zh:"尽管，虽然", def:"in spite of the fact that", eg:"Although it was late, I cooked dinner."},
+      {w:"relieve", ipa:"/rɪˈliːv/", pos:"v.", zh:"缓解，减轻（你写成了 relived 重温，差很远）", def:"to reduce pain, worry or a problem", eg:"The food relieved my stress."},
+      {w:"stressful", ipa:"/ˈstresfl/", pos:"adj.", zh:"有压力的，令人紧张的", def:"causing a lot of worry or pressure", eg:"My job is very stressful."},
+      {w:"exhausted", ipa:"/ɪɡˈzɔːstɪd/", pos:"adj.", zh:"筋疲力尽的（比 tired 更强）", def:"extremely tired", eg:"After 11 hours of work, I was exhausted."},
+      {w:"delicious", ipa:"/dɪˈlɪʃəs/", pos:"adj.", zh:"美味的", def:"having a very pleasant taste", eg:"The beef steak was delicious."}
     ]
   }
 };
+
+// ===== 发音（Web Speech API，iPhone Safari 支持）=====
+function speak(text){
+  if(!('speechSynthesis' in window)){alert('当前浏览器不支持发音，建议用 Safari');return;}
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-GB';           // 雅思偏英式，优先英音
+  u.rate=0.85;              // 稍慢，方便跟读
+  const vs=window.speechSynthesis.getVoices();
+  const pref=vs.find(v=>v.lang==='en-GB')||vs.find(v=>v.lang && v.lang.startsWith('en'));
+  if(pref)u.voice=pref;
+  window.speechSynthesis.speak(u);
+}
+// 预加载嗓音列表（部分浏览器首次为空）
+if('speechSynthesis' in window){window.speechSynthesis.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();}
 
 // ===== 状态管理 =====
 let curDay = 1;
@@ -256,13 +274,14 @@ function renderDay(){
     <div class="word" onclick="this.classList.toggle('flip')">
       <div class="word-inner">
         <div class="word-face word-front">
-          <div class="w">${x.w}</div><div class="pos">${x.pos}</div>
+          <div class="w">${x.w} <span class="speak" onclick="event.stopPropagation();speak('${x.w}')">🔊</span></div>
+          <div class="ipa">${x.ipa||''}</div><div class="pos">${x.pos}</div>
           <div class="hint">点击看释义 ↻</div>
         </div>
         <div class="word-face word-back">
           <div class="zh">${x.zh}</div>
           <div class="def">EN: ${x.def}</div>
-          <div class="eg">e.g. ${x.eg}</div>
+          <div class="eg">e.g. ${x.eg} <span class="speak" onclick="event.stopPropagation();speak(&quot;${x.eg.replace(/"/g,'')}&quot;)">🔊</span></div>
         </div>
       </div>
     </div>`).join('');
