@@ -62,6 +62,14 @@
   .word-back .eg{font-size:12px;color:var(--sub);margin-top:6px;}
   .note{background:#2a2033;border:1px solid #4a3a2a;border-radius:12px;padding:12px;font-size:13px;color:var(--warn);}
   .note b{color:#ffd79a;}
+  /* 精听播放器 */
+  .player{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+  .player .btn{margin-top:0;}
+  .script{margin-top:10px;}
+  .line{background:var(--card2);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+  .line-en{display:flex;align-items:flex-start;gap:8px;font-size:15px;line-height:1.5;}
+  .line-zh{font-size:12px;color:var(--sub);margin-top:5px;padding-left:26px;}
+  .script.hide-zh .line-zh{display:none;}
   .task-check{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);}
   .checkbox{width:24px;height:24px;border-radius:7px;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;cursor:pointer;}
   .checkbox.on{background:var(--accent2);border-color:var(--accent2);}
@@ -207,9 +215,17 @@ const DAYS = {
     },
     listen: {
       title: "慢速精听启动",
-      body: `去 BBC Learning English 的 <b>"6 Minute English"</b> 或 ELLLO 最低难度，选一小段（1–2 分钟）。方法：<b>听一遍→不看文本猜大意→再听一遍→看文本核对→跟读 2 遍。</b>`,
-      link: {text:"打开 BBC Learning English →", url:"https://www.bbc.co.uk/learningenglish/"},
-      task: "告诉 AI：① 不看文本你听懂了百分之几 ② 哪一句完全没听懂（贴出来）"
+      body: `下面是一段<b>慢速日常短文</b>（话题：通勤，贴近你的生活）。方法：<b>① 先点「▶ 全文朗读」只听、不看中文，猜大意 → ② 再听一遍 → ③ 展开中文核对 → ④ 逐句点 🔊 跟读 2 遍。</b>`,
+      script: [
+        {en:"Tom used to drive to work every day.", zh:"Tom 以前每天开车上班。"},
+        {en:"But last year, he moved to the city center.", zh:"但去年，他搬到了市中心。"},
+        {en:"Now he takes the subway instead.", zh:"现在他改乘地铁了。"},
+        {en:"He says it saves him money and stress.", zh:"他说这为他省钱、也省心。"},
+        {en:"However, the train is very crowded in the morning.", zh:"不过，早上地铁很拥挤。"},
+        {en:"Sometimes he has to wait for the next one.", zh:"有时他得等下一趟。"},
+        {en:"Even so, he thinks it was a good decision.", zh:"即便如此，他觉得这是个好决定。"}
+      ],
+      task: "告诉 AI：① 不看中文你听懂了百分之几 ② 哪一句完全没听懂（把那句英文贴出来）"
     },
     words: [
       {w:"improve", ipa:"/ɪmˈpruːv/", pos:"v. 动词", zh:"改善，提高", def:"to make something better", eg:"I want to improve my English."},
@@ -245,6 +261,40 @@ function speak(text){
 }
 // 预加载嗓音列表（部分浏览器首次为空）
 if('speechSynthesis' in window){window.speechSynthesis.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();}
+
+// 全文朗读 / 暂停 / 停止
+function togglePlayAll(){
+  const btn=document.getElementById('playAllBtn');
+  const synth=window.speechSynthesis;
+  if(!('speechSynthesis' in window)){alert('当前浏览器不支持发音，建议用 Safari');return;}
+  if(synth.speaking && !synth.paused){        // 正在读 → 暂停
+    synth.pause();btn.textContent='▶ 继续';return;
+  }
+  if(synth.paused){                            // 已暂停 → 继续
+    synth.resume();btn.textContent='⏸ 暂停';return;
+  }
+  // 从头读全文
+  synth.cancel();
+  const u=new SpeechSynthesisUtterance(window.__listenFull||'');
+  u.lang='en-GB';u.rate=0.8;
+  const vs=synth.getVoices();
+  const pref=vs.find(v=>v.lang==='en-GB')||vs.find(v=>v.lang&&v.lang.startsWith('en'));
+  if(pref)u.voice=pref;
+  u.onend=()=>{btn.textContent='▶ 全文朗读';};
+  u.onerror=()=>{btn.textContent='▶ 全文朗读';};
+  synth.speak(u);
+  btn.textContent='⏸ 暂停';
+}
+function stopSpeak(){
+  if('speechSynthesis' in window)window.speechSynthesis.cancel();
+  const b=document.getElementById('playAllBtn');if(b)b.textContent='▶ 全文朗读';
+}
+function toggleZh(){
+  const box=document.getElementById('scriptBox');
+  const btn=document.getElementById('zhToggle');
+  box.classList.toggle('hide-zh');
+  btn.textContent=box.classList.contains('hide-zh')?'显示中文':'隐藏中文';
+}
 
 // ===== 状态管理 =====
 let curDay = 1;
@@ -286,6 +336,16 @@ function renderDay(){
       </div>
     </div>`).join('');
   let exHtml=d.grammar.examples.map(e=>`<div class="ex">${e.en}<div class="zh">${e.zh}</div></div>`).join('');
+  let scriptHtml=d.listen.script.map((s,i)=>`
+    <div class="line">
+      <div class="line-en">
+        <span class="speak" onclick="speak(&quot;${s.en.replace(/"/g,'')}&quot;)">🔊</span>
+        <span>${s.en}</span>
+      </div>
+      <div class="line-zh">${s.zh}</div>
+    </div>`).join('');
+  // 全文拼成一段，用于「全文朗读」
+  window.__listenFull = d.listen.script.map(s=>s.en).join(' ');
 
   box.innerHTML=`
     <div class="card">
@@ -295,9 +355,14 @@ function renderDay(){
       <div class="note">✍️ <b>作业</b>：${d.grammar.task}</div>
     </div>
     <div class="card">
-      <h2><span class="ico">🎧</span>② 精听 <span class="mins">10 分钟</span></h2>
+      <h2><span class="ico">🎧</span>② 精听 <span class="mins">10 分钟</span><span class="tag">${d.listen.script.length} 句</span></h2>
       <p style="font-size:14px;">${d.listen.body}</p>
-      <a class="btn ghost" href="${d.listen.link.url}" target="_blank">${d.listen.link.text}</a>
+      <div class="player">
+        <button class="btn" id="playAllBtn" onclick="togglePlayAll()">▶ 全文朗读</button>
+        <button class="btn ghost" onclick="stopSpeak()">■ 停止</button>
+        <button class="btn ghost" id="zhToggle" onclick="toggleZh()">显示中文</button>
+      </div>
+      <div class="script hide-zh" id="scriptBox">${scriptHtml}</div>
       <div class="note">✍️ <b>作业</b>：${d.listen.task}</div>
     </div>
     <div class="card">
