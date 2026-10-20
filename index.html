@@ -125,9 +125,9 @@
     </div>
     <div class="card">
       <h2><span class="ico">📅</span>每天 30 分钟怎么分</h2>
-      <div class="ex"><b>① 语法 10 分钟</b><div class="zh">学一个点 + 造 3 个句子（发给 AI 批改）</div></div>
-      <div class="ex"><b>② 精听 10 分钟</b><div class="zh">一小段慢速音频：听→暂停→跟读→核对文本</div></div>
-      <div class="ex"><b>③ 单词 10 分钟</b><div class="zh">背 15 个高频词，第二天抽查默写</div></div>
+      <div class="ex"><b>① 单词 10 分钟</b><div class="zh">背 15 个高频词（带音标/发音/英文释义），第二天抽查默写</div></div>
+      <div class="ex"><b>② 语法 10 分钟</b><div class="zh">学一个点 + 造 3 个句子（发给 AI 批改）</div></div>
+      <div class="ex"><b>③ 精听 10 分钟</b><div class="zh">页面内朗读：听→听写→核对。现阶段目标：听写 100% 正确</div></div>
       <div class="note">💡 <b>核心原则</b>：页面是载体不是老师。每天把造句/做题/写作<b>发到和 AI 的对话里</b>批改纠错，页面 + 对话一起用才完整。</div>
     </div>
     <div class="card">
@@ -357,13 +357,19 @@ function renderDay(){
 
   box.innerHTML=`
     <div class="card">
-      <h2><span class="ico">📖</span>① 语法 <span class="mins">10 分钟</span><span class="tag">${d.grammar.title}</span></h2>
+      <h2><span class="ico">🔤</span>① 单词 <span class="mins">10 分钟</span><span class="tag">${d.words.length} 个</span></h2>
+      <p style="font-size:13px;color:var(--sub);">点卡片翻面看中文+英文释义。先理解，再记。有 🔊 可听发音。</p>
+      <div class="word-grid" style="margin-top:10px;">${wordsHtml}</div>
+      <div class="note" style="margin-top:12px;">💡 明天我会抽查这 15 个词，随机让你默写几个。</div>
+    </div>
+    <div class="card">
+      <h2><span class="ico">📖</span>② 语法 <span class="mins">10 分钟</span><span class="tag">${d.grammar.title}</span></h2>
       <p style="font-size:14px;">${d.grammar.body}</p>
       <div class="sect-title">例句</div>${exHtml}
       <div class="note">✍️ <b>作业</b>：${d.grammar.task}</div>
     </div>
     <div class="card">
-      <h2><span class="ico">🎧</span>② 精听 <span class="mins">10 分钟</span><span class="tag">${d.listen.script.length} 句</span></h2>
+      <h2><span class="ico">🎧</span>③ 精听 <span class="mins">10 分钟</span><span class="tag">${d.listen.script.length} 句</span></h2>
       <p style="font-size:14px;">${d.listen.body}</p>
       <div class="player">
         <button class="btn" id="playAllBtn" onclick="togglePlayAll()">▶ 全文朗读</button>
@@ -371,15 +377,9 @@ function renderDay(){
         <button class="btn ghost" id="enToggle" onclick="toggleEn()">显示英文</button>
         <button class="btn ghost" id="zhToggle" onclick="toggleZh()">显示中文</button>
       </div>
-      <p style="font-size:12px;color:var(--sub);margin:4px 0 0;">💡 先只点「全文朗读」用耳朵听，听懂大意后再点「显示英文」核对，最后点「显示中文」。逐句 🔊 可跟读。</p>
+      <p style="font-size:12px;color:var(--sub);margin:4px 0 0;">💡 流程：先「全文朗读」只用耳朵听 → 听写下来 → 点「显示英文」核对 → 再点「显示中文」。<b>现阶段目标：听写 100% 正确</b>，不求快求量，打扎实地基。</p>
       <div class="script hide-en hide-zh" id="scriptBox">${scriptHtml}</div>
-      <div class="note">✍️ <b>作业</b>：${d.listen.task}</div>
-    </div>
-    <div class="card">
-      <h2><span class="ico">🔤</span>③ 单词 <span class="mins">10 分钟</span><span class="tag">${d.words.length} 个</span></h2>
-      <p style="font-size:13px;color:var(--sub);">点卡片翻面看中文+英文释义。先理解，再记。</p>
-      <div class="word-grid" style="margin-top:10px;">${wordsHtml}</div>
-      <div class="note" style="margin-top:12px;">💡 明天我会抽查这 15 个词，随机让你默写几个。</div>
+      <div class="note">✍️ <b>作业</b>：把你的听写拍照/打字发给 AI 批改（重点看语法，不只是漏词）。</div>
     </div>
     <button class="big-check ${isDone?'done':''}" id="bigCheck" onclick="toggleDone()">
       ${isDone?'✓ 今天已打卡（再点取消）':'今天三块都完成了，打卡 →'}
