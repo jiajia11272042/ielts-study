@@ -70,6 +70,8 @@
   .line-en{display:flex;align-items:flex-start;gap:8px;font-size:15px;line-height:1.5;}
   .line-zh{font-size:12px;color:var(--sub);margin-top:5px;padding-left:26px;}
   .script.hide-zh .line-zh{display:none;}
+  .script.hide-en .en-text{visibility:hidden;position:relative;}
+  .script.hide-en .en-text::before{content:"（点「显示英文」查看）";visibility:visible;position:absolute;left:0;color:var(--sub);font-size:13px;font-style:normal;white-space:nowrap;}
   .task-check{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);}
   .checkbox{width:24px;height:24px;border-radius:7px;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;cursor:pointer;}
   .checkbox.on{background:var(--accent2);border-color:var(--accent2);}
@@ -289,6 +291,12 @@ function stopSpeak(){
   if('speechSynthesis' in window)window.speechSynthesis.cancel();
   const b=document.getElementById('playAllBtn');if(b)b.textContent='▶ 全文朗读';
 }
+function toggleEn(){
+  const box=document.getElementById('scriptBox');
+  const btn=document.getElementById('enToggle');
+  box.classList.toggle('hide-en');
+  btn.textContent=box.classList.contains('hide-en')?'显示英文':'隐藏英文';
+}
 function toggleZh(){
   const box=document.getElementById('scriptBox');
   const btn=document.getElementById('zhToggle');
@@ -340,7 +348,7 @@ function renderDay(){
     <div class="line">
       <div class="line-en">
         <span class="speak" onclick="speak(&quot;${s.en.replace(/"/g,'')}&quot;)">🔊</span>
-        <span>${s.en}</span>
+        <span class="en-text">${s.en}</span>
       </div>
       <div class="line-zh">${s.zh}</div>
     </div>`).join('');
@@ -360,9 +368,11 @@ function renderDay(){
       <div class="player">
         <button class="btn" id="playAllBtn" onclick="togglePlayAll()">▶ 全文朗读</button>
         <button class="btn ghost" onclick="stopSpeak()">■ 停止</button>
+        <button class="btn ghost" id="enToggle" onclick="toggleEn()">显示英文</button>
         <button class="btn ghost" id="zhToggle" onclick="toggleZh()">显示中文</button>
       </div>
-      <div class="script hide-zh" id="scriptBox">${scriptHtml}</div>
+      <p style="font-size:12px;color:var(--sub);margin:4px 0 0;">💡 先只点「全文朗读」用耳朵听，听懂大意后再点「显示英文」核对，最后点「显示中文」。逐句 🔊 可跟读。</p>
+      <div class="script hide-en hide-zh" id="scriptBox">${scriptHtml}</div>
       <div class="note">✍️ <b>作业</b>：${d.listen.task}</div>
     </div>
     <div class="card">
